@@ -60,7 +60,7 @@ func getAvailableLocales(req *http.Request, currentUser interface{}) []string {
 	if user, ok := currentUser.(availableLocalesInterface); ok {
 		return user.AvailableLocales()
 	}
-	return []string{}
+	return []string{Global}
 }
 
 func getEditableLocales(req *http.Request, currentUser interface{}) []string {
@@ -71,7 +71,7 @@ func getEditableLocales(req *http.Request, currentUser interface{}) []string {
 	if user, ok := currentUser.(availableLocalesInterface); ok {
 		return user.AvailableLocales()
 	}
-	return []string{}
+	return []string{Global}
 }
 
 func getLocaleFromContext(context *qor.Context) string {
@@ -124,7 +124,7 @@ func (l *Locale) ConfigureQorResource(res resource.Resourcer) {
 		for _, field := range Admin.Config.DB.NewScope(res.Value).Fields() {
 			if isSyncField(field.StructField) {
 				if meta := res.GetMeta(field.Name); meta != nil {
-					permission := meta.Permission
+					permission := meta.Meta.Permission
 					if permission == nil {
 						permission = roles.Allow(roles.CRUD, "global_admin").Allow(roles.Read, "locale_reader")
 					} else {
@@ -140,6 +140,19 @@ func (l *Locale) ConfigureQorResource(res resource.Resourcer) {
 
 		// Roles
 		role := res.Config.Permission.Role
+		if _, ok := role.Get("global_admin"); !ok {
+			role.Register("global_admin", func(req *http.Request, currentUser interface{}) bool {
+				if getLocaleFromContext(&qor.Context{Request: req}) == Global {
+					for _, locale := range getEditableLocales(req, currentUser) {
+						if locale == Global {
+							return true
+						}
+					}
+				}
+				return false
+			})
+		}
+
 		if _, ok := role.Get("locale_admin"); !ok {
 			role.Register("locale_admin", func(req *http.Request, currentUser interface{}) bool {
 				currentLocale := getLocaleFromContext(&qor.Context{Request: req})
@@ -149,12 +162,6 @@ func (l *Locale) ConfigureQorResource(res resource.Resourcer) {
 					}
 				}
 				return false
-			})
-		}
-
-		if _, ok := role.Get("global_admin"); !ok {
-			role.Register("global_admin", func(req *http.Request, currentUser interface{}) bool {
-				return getLocaleFromContext(&qor.Context{Request: req}) == Global
 			})
 		}
 
