@@ -131,7 +131,7 @@ func (l *Locale) ConfigureQorResource(res resource.Resourcer) {
 						permission = permission.Allow(roles.CRUD, "global_admin").Allow(roles.Read, "locale_reader")
 					}
 
-					meta.Permission = permission
+					meta.SetPermission(permission)
 				} else {
 					res.Meta(&admin.Meta{Name: field.Name, Permission: roles.Allow(roles.CRUD, "global_admin").Allow(roles.Read, "locale_reader")})
 				}
