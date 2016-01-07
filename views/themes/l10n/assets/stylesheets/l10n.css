@@ -1,1 +1,3 @@
-.qor-locale-container{float:left;height:32px;padding-top:12px;padding-bottom:12px;margin-right:8px}
+.qor-slideout .qor-actions__locale {
+  display: none;
+}
