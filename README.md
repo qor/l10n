@@ -20,7 +20,7 @@ func main() {
 
 ### Make Model Localizable
 
-Embed `l10.Locale` into your model as anonymous field to enable localization, for example:
+Embed `l10n.Locale` into your model as anonymous field to enable localization, for example:
 
 ```go
 type Product struct {
