@@ -3,9 +3,6 @@ package l10n
 import (
 	"fmt"
 	"net/http"
-	"os"
-	"path"
-	"strings"
 
 	"github.com/qor/qor"
 	"github.com/qor/qor/admin"
@@ -178,9 +175,7 @@ func (l *Locale) ConfigureQorResource(res resource.Resourcer) {
 		}
 
 		// Inject for l10n
-		for _, gopath := range strings.Split(os.Getenv("GOPATH"), ":") {
-			admin.RegisterViewPath(path.Join(gopath, "src/github.com/qor/l10n/views"))
-		}
+		admin.RegisterViewPath("github.com/qor/l10n/views")
 
 		// Middleware
 		Admin.GetRouter().Use(&admin.Middleware{
