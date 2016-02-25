@@ -11,6 +11,7 @@ import (
 	"github.com/qor/roles"
 )
 
+// Global global language
 var Global = "en-US"
 
 type l10nInterface interface {
@@ -18,23 +19,27 @@ type l10nInterface interface {
 	SetLocale(locale string)
 }
 
+// Locale embed this struct into GROM-backend models to enable localization feature for your model
 type Locale struct {
 	LanguageCode string `sql:"size:6" gorm:"primary_key"`
 }
 
+// IsGlobal return if current locale is global
 func (l Locale) IsGlobal() bool {
 	return l.LanguageCode == Global
 }
 
+// SetLocale set model's locale
 func (l *Locale) SetLocale(locale string) {
 	l.LanguageCode = locale
 }
 
-// LocaleCreatable make the resource be creatable from a locale, by default, you can only create it from global
+// LocaleCreatable if you embed it into your model, it will make the resource be creatable from locales, by default, you can only create it from global
 type LocaleCreatable struct {
 	Locale
 }
 
+// LocaleCreatable a method to allow your mod=el be creatable from locales
 func (LocaleCreatable) LocaleCreatable() {}
 
 type availableLocalesInterface interface {
@@ -79,6 +84,7 @@ func getLocaleFromContext(context *qor.Context) string {
 	return Global
 }
 
+// ConfigureQorResource configure qor locale for Qor Admin
 func (l *Locale) ConfigureQorResource(res resource.Resourcer) {
 	if res, ok := res.(*admin.Resource); ok {
 		Admin := res.GetAdmin()
@@ -215,11 +221,11 @@ func (l *Locale) ConfigureQorResource(res resource.Resourcer) {
 			editableLocales := getEditableLocales(context.Request, context.CurrentUser)
 			if _, ok := context.Resource.Value.(localeCreatableInterface); ok {
 				return editableLocales
-			} else {
-				for _, locale := range editableLocales {
-					if locale == Global {
-						return []string{Global}
-					}
+			}
+
+			for _, locale := range editableLocales {
+				if locale == Global {
+					return []string{Global}
 				}
 			}
 			return []string{}

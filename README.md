@@ -1,10 +1,12 @@
 # L10n
 
-L10n make your resources(models) be able to localize into different locales, it refers to the adaptation of a product, application or document content to meet the language, cultural and other requirements of a specific target market
+L10n make your [GORM-backend](https://github.com/jinzhu/gorm) models be able to localize into different locales, it refers to the adaptation of a product, application or document content to meet the language, cultural and other requirements of a specific target market
+
+[![GoDoc](https://godoc.org/github.com/qor/l10n?status.svg)](https://godoc.org/github.com/qor/l10n)
 
 ## Usage
 
-L10n using [GORM](https://github.com/jinzhu/gorm) callbacks to handle localization things, so you need to register callbacks to gorm DB first, like:
+L10n is using [GORM](https://github.com/jinzhu/gorm) callbacks to handle localization, so you need to register callbacks first:
 
 ```go
 import (
@@ -31,11 +33,11 @@ type Product struct {
 }
 ```
 
-`l10n.Locale` will register a `language_code` column as composite primary key with existing primary keys, use gorm's AutoMigrate to create it.
+`l10n.Locale` will add a `language_code` column as composite primary key with existing primary keys, use gorm's AutoMigrate to create the field.
 
-The `language_code` column is used to save localized model's locale, if no locale set, it will use the global locale.
+The `language_code` column will be used to save localized model's locale, if no locale set, will use global locale default.
 
-By default it is `en-US`, but it could be change by setting `l10n.Global`, for example:
+By default it is `en-US`, but it could be changed by setting `l10n.Global`, for example:
 
 ```go
 l10n.Global = 'zh-CN'
@@ -61,7 +63,7 @@ productCN.LanguageCode // "zh"
 
 ### Keep localized resources's fields syncing
 
-Add tag `l10n:"sync"` for a field if you want it's value always sync with global record
+Add tag `l10n:"sync"` to those fields if you want they always sync with global record
 
 ```go
 type Product struct {
@@ -72,7 +74,7 @@ type Product struct {
 }
 ```
 
-Now, localized product's `Code` will keep same with the global product's `Code`, the `Code` is not changable from localized resources then, and when the global record change its `Code`, it will be auto synced to localized resources.
+Now, localized product's `Code` will keep same with the global product's `Code`, the `Code` is not changable from localized resources, and when the global record change its `Code`, localized records's `Code` will be synced automatically.
 
 ### Query Modes
 
