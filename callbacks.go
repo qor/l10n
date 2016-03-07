@@ -12,6 +12,7 @@ func beforeQuery(scope *gorm.Scope) {
 	if isLocalizable(scope) {
 		quotedTableName := scope.QuotedTableName()
 		quotedPrimaryKey := scope.Quote(scope.PrimaryKey())
+		_, hasDeletedAtColumn := scope.FieldByName("deleted_at")
 
 		locale, isLocale := getLocale(scope)
 		switch mode, _ := scope.DB().Get("l10n:mode"); mode {
@@ -21,14 +22,14 @@ func beforeQuery(scope *gorm.Scope) {
 		case "locale":
 			scope.Search.Where(fmt.Sprintf("%v.language_code = ?", quotedTableName), locale)
 		case "reverse":
-			if !scope.Search.Unscoped && scope.Fields()["deleted_at"] != nil {
+			if !scope.Search.Unscoped && hasDeletedAtColumn {
 				scope.Search.Where(fmt.Sprintf("(%v NOT IN (SELECT DISTINCT(%v) FROM %v t2 WHERE t2.language_code = ? AND t2.deleted_at IS NULL) AND language_code = ?)", quotedPrimaryKey, quotedPrimaryKey, quotedTableName), locale, Global)
 			} else {
 				scope.Search.Where(fmt.Sprintf("(%v NOT IN (SELECT DISTINCT(%v) FROM %v t2 WHERE t2.language_code = ?) AND language_code = ?)", quotedPrimaryKey, quotedPrimaryKey, quotedTableName), locale, Global)
 			}
 		default:
 			if isLocale {
-				if !scope.Search.Unscoped && scope.Fields()["deleted_at"] != nil {
+				if !scope.Search.Unscoped && hasDeletedAtColumn {
 					scope.Search.Where(fmt.Sprintf("((%v NOT IN (SELECT DISTINCT(%v) FROM %v t2 WHERE t2.language_code = ? AND t2.deleted_at IS NULL) AND language_code = ?) OR language_code = ?) AND deleted_at IS NULL", quotedPrimaryKey, quotedPrimaryKey, quotedTableName), locale, Global, locale)
 				} else {
 					scope.Search.Where(fmt.Sprintf("(%v NOT IN (SELECT DISTINCT(%v) FROM %v t2 WHERE t2.language_code = ?) AND language_code = ?) OR (language_code = ?)", quotedPrimaryKey, quotedPrimaryKey, quotedTableName), locale, Global, locale)
@@ -106,9 +107,8 @@ func afterUpdate(scope *gorm.Scope) {
 								}
 							}
 						} else {
-							var fields = scope.Fields()
 							for _, syncColumn := range syncColumns {
-								if field, ok := fields[syncColumn]; ok && field.IsNormal {
+								if field, ok := scope.FieldByName(syncColumn); ok && field.IsNormal {
 									syncAttrs[syncColumn] = field.Field.Interface()
 								}
 							}
