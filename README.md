@@ -1,12 +1,12 @@
 # L10n
 
-L10n make your [GORM-backend](https://github.com/jinzhu/gorm) models be able to localize into different locales, it refers to the adaptation of a product, application or document content to meet the language, cultural and other requirements of a specific target market
+L10n gives your [GORM-backend](https://github.com/jinzhu/gorm) models the ability to localize for different locales. It can be a catalyst for the adaptation of a product, application, or document content to meet the language, cultural, and other requirements of a specific target market.
 
 [![GoDoc](https://godoc.org/github.com/qor/l10n?status.svg)](https://godoc.org/github.com/qor/l10n)
 
 ## Usage
 
-L10n is using [GORM](https://github.com/jinzhu/gorm) callbacks to handle localization, so you need to register callbacks first:
+L10n is using [GORM](https://github.com/jinzhu/gorm) callbacks to handle localization, so you will need to register callbacks first:
 
 ```go
 import (
@@ -22,7 +22,7 @@ func main() {
 
 ### Make Model Localizable
 
-Embed `l10n.Locale` into your model as anonymous field to enable localization, for example:
+Embed `l10n.Locale` into your model as an anonymous field to enable localization, for example:
 
 ```go
 type Product struct {
@@ -33,11 +33,11 @@ type Product struct {
 }
 ```
 
-`l10n.Locale` will add a `language_code` column as composite primary key with existing primary keys, use gorm's AutoMigrate to create the field.
+`l10n.Locale` will add a `language_code` column as composite primary key with existing primary keys, using GORM's AutoMigrate to create the field.
 
-The `language_code` column will be used to save localized model's locale, if no locale set, will use global locale default.
+The `language_code` column will be used to save localized model's locale. If no locale is set, then the global locale default will be used.
 
-By default it is `en-US`, but it could be changed by setting `l10n.Global`, for example:
+The default locale is `en-US`, override the default by setting `l10n.Global`, for example:
 
 ```go
 l10n.Global = 'zh-CN'
@@ -63,7 +63,7 @@ productCN.LanguageCode // "zh"
 
 ### Keep localized resources's fields syncing
 
-Add tag `l10n:"sync"` to those fields if you want they always sync with global record
+Add tag `l10n:"sync"` to the fields that you wish to always sync with the *global* record:
 
 ```go
 type Product struct {
@@ -74,7 +74,7 @@ type Product struct {
 }
 ```
 
-Now, localized product's `Code` will keep same with the global product's `Code`, the `Code` is not changable from localized resources, and when the global record change its `Code`, localized records's `Code` will be synced automatically.
+Now the localized product's `Code` will be the same as the global product's `Code`. The `Code` is not changable from localized resources, and when the global record change its `Code`, localized records' `Code` will be synced automatically.
 
 ### Query Modes
 
@@ -102,17 +102,17 @@ db.Set("l10n:mode", mode).First(&product, 111)
 
 ## Qor Support
 
-[QOR](http://getqor.com) is architected from the ground up to accelerate development and deployment of Content Management Systems, E-commerce Systems, and Business Applications, and comprised of modules that abstract common features for such system.
+[QOR](http://getqor.com) is architected from the ground up to accelerate development and deployment of Content Management Systems, E-commerce Systems, and Business Applications and as such is comprised of modules that abstract common features for such systems.
 
-Although L10n could be used alone, it works nicely with QOR, if you have requirements to manage your application's data, be sure to check QOR out!
+Although L10n could be used alone, it works very nicely with QOR - if you have requirements to manage your application's data, be sure to check QOR out!
 
 [QOR Demo:  http://demo.getqor.com/admin](http://demo.getqor.com/admin)
 
 [L10n Demo with QOR](http://demo.getqor.com/admin/products)
 
-By default, Qor will only allow you manage global language, if you have configured `Auth` for qor admin, it will try to get allowed locales from current user.
+By default, Qor will only allow you manage the global language. If you have configured `Auth`, QOR Admin will try to get allowed locales from the current user.
 
-* Viewable Locales - locales that current user has read permission
+* Viewable Locales - locales for which the current user has read permission
 
 ```go
 func (user User) ViewableLocales() []string {
@@ -120,7 +120,7 @@ func (user User) ViewableLocales() []string {
 }
 ```
 
-* Editable Locales - locales that current user has manage (create/update/delete) permission
+* Editable Locales - locales for which the current user has manage (create/update/delete) permission
 
 ```go
 func (user User) EditableLocales() []string {
