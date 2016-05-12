@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/qor/qor"
 	"github.com/qor/admin"
+	"github.com/qor/qor"
 	"github.com/qor/qor/resource"
 	"github.com/qor/qor/utils"
 	"github.com/qor/roles"
@@ -181,7 +181,7 @@ func (l *Locale) ConfigureQorResource(res resource.Resourcer) {
 		}
 
 		// Inject for l10n
-		admin.RegisterViewPath("github.com/qor/l10n/views")
+		Admin.RegisterViewPath("github.com/qor/l10n/views")
 
 		// Middleware
 		Admin.GetRouter().Use(&admin.Middleware{
