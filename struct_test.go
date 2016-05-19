@@ -15,6 +15,7 @@ type Product struct {
 	Name            string
 	DeletedAt       *time.Time
 	ColorVariations []ColorVariation
+	BrandID         uint `l10n:"sync"`
 	Brand           Brand
 	Tags            []Tag `gorm:"many2many:product_tags"`
 	l10n.Locale
@@ -53,9 +54,11 @@ func init() {
 	l10n.RegisterCallbacks(db)
 
 	db.DropTableIfExists(&Product{})
+	db.DropTableIfExists(&Brand{})
 	db.DropTableIfExists(&Tag{})
 	db.Exec("drop table product_tags;")
 	db.AutoMigrate(&Product{})
+	db.AutoMigrate(&Brand{})
 	db.AutoMigrate(&Tag{})
 
 	dbGlobal = db
