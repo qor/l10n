@@ -88,7 +88,7 @@ func afterUpdate(scope *gorm.Scope) {
 
 					// if no localized records exist, localize it
 					if scope.NewDB().Table(scope.TableName()).Where(query, locale, scope.PrimaryKeyValue()).Count(&count); count == 0 {
-						scope.DB().Create(scope.Value)
+						scope.DB().RowsAffected = scope.DB().Create(scope.Value).RowsAffected
 					}
 				}
 			} else if syncColumns := syncColumns(scope); len(syncColumns) > 0 { // is global
