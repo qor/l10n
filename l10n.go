@@ -103,25 +103,25 @@ func (l *Locale) ConfigureQorResource(res resource.Resourcer) {
 				db.New().Set("l10n:mode", "unscoped").Model(res.Value).Where(fmt.Sprintf("%v = ?", scope.PrimaryKey()), scope.PrimaryKeyValue()).Pluck("language_code", &languageCodes)
 				return languageCodes
 			}})
-
-			attrs := res.ConvertSectionToStrings(res.IndexAttrs())
-			var hasLocalization bool
-			for _, attr := range attrs {
-				if attr == "Localization" {
-					hasLocalization = true
-					break
-				}
-			}
-
-			if hasLocalization {
-				res.IndexAttrs(res.IndexAttrs(), "-LanguageCode")
-			} else {
-				res.IndexAttrs(res.IndexAttrs(), "-LanguageCode", "Localization")
-			}
-			res.NewAttrs(res.NewAttrs(), "-LanguageCode", "-Localization")
-			res.EditAttrs(res.EditAttrs(), "-LanguageCode", "-Localization")
-			res.ShowAttrs(res.ShowAttrs(), "-LanguageCode", "-Localization", false)
 		}
+
+		var attrs = res.ConvertSectionToStrings(res.IndexAttrs())
+		var hasLocalization bool
+		for _, attr := range attrs {
+			if attr == "Localization" {
+				hasLocalization = true
+				break
+			}
+		}
+
+		if hasLocalization {
+			res.IndexAttrs(res.IndexAttrs(), "-LanguageCode")
+		} else {
+			res.IndexAttrs(res.IndexAttrs(), "-LanguageCode", "Localization")
+		}
+		res.NewAttrs(res.NewAttrs(), "-LanguageCode", "-Localization")
+		res.EditAttrs(res.EditAttrs(), "-LanguageCode", "-Localization")
+		res.ShowAttrs(res.ShowAttrs(), "-LanguageCode", "-Localization", false)
 
 		// Set meta permissions
 		for _, field := range Admin.Config.DB.NewScope(res.Value).Fields() {
