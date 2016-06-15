@@ -230,5 +230,40 @@ func (l *Locale) ConfigureQorResource(res resource.Resourcer) {
 			}
 			return []string{}
 		})
+
+		type actionArgument struct {
+			From string
+			To   string
+		}
+		argumentResource := Admin.NewResource(&actionArgument{})
+		argumentResource.Meta(&admin.Meta{
+			Name: "From",
+			Type: "select_one",
+			Collection: func(value interface{}, context *qor.Context) (results [][]string) {
+				for _, locale := range getAvailableLocales(context.Request, context.CurrentUser) {
+					results = append(results, []string{locale, locale})
+				}
+				return
+			},
+		})
+		argumentResource.Meta(&admin.Meta{
+			Name: "To",
+			Type: "select_one",
+			Collection: func(value interface{}, context *qor.Context) (results [][]string) {
+				for _, locale := range getEditableLocales(context.Request, context.CurrentUser) {
+					results = append(results, []string{locale, locale})
+				}
+				return
+			},
+		})
+
+		res.Action(&admin.Action{
+			Name: "Localize",
+			Handle: func(argument *admin.ActionArgument) error {
+				return nil
+			},
+			Modes:    []string{"index"},
+			Resource: argumentResource,
+		})
 	}
 }
