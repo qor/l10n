@@ -3,6 +3,7 @@ package l10n
 import (
 	"fmt"
 	"net/http"
+	"reflect"
 
 	"github.com/qor/admin"
 	"github.com/qor/qor"
@@ -239,6 +240,9 @@ func (l *Locale) ConfigureQorResource(res resource.Resourcer) {
 		argumentResource.Meta(&admin.Meta{
 			Name: "From",
 			Type: "select_one",
+			Valuer: func(_ interface{}, context *qor.Context) interface{} {
+				return Global
+			},
 			Collection: func(value interface{}, context *qor.Context) (results [][]string) {
 				for _, locale := range getAvailableLocales(context.Request, context.CurrentUser) {
 					results = append(results, []string{locale, locale})
@@ -249,6 +253,9 @@ func (l *Locale) ConfigureQorResource(res resource.Resourcer) {
 		argumentResource.Meta(&admin.Meta{
 			Name: "To",
 			Type: "select_one",
+			Valuer: func(_ interface{}, context *qor.Context) interface{} {
+				return getLocaleFromContext(context)
+			},
 			Collection: func(value interface{}, context *qor.Context) (results [][]string) {
 				for _, locale := range getEditableLocales(context.Request, context.CurrentUser) {
 					results = append(results, []string{locale, locale})
@@ -260,6 +267,17 @@ func (l *Locale) ConfigureQorResource(res resource.Resourcer) {
 		res.Action(&admin.Action{
 			Name: "Localize",
 			Handle: func(argument *admin.ActionArgument) error {
+				db := argument.Context.GetDB()
+				arg := argument.Argument.(*actionArgument)
+				results := res.NewSlice()
+
+				fmt.Println(argument.PrimaryValues)
+				db.Set("l10n:locale", arg.From).Find(results, fmt.Sprintf("%v IN (?)", res.PrimaryDBName()), argument.PrimaryValues)
+
+				reflectResults := reflect.Indirect(reflect.ValueOf(results))
+				for i := 0; i < reflectResults.Len(); i++ {
+					db.Set("l10n:locale", arg.To).Save(reflectResults.Index(i).Interface())
+				}
 				return nil
 			},
 			Modes:    []string{"index"},
