@@ -129,6 +129,10 @@ func TestQuery(t *testing.T) {
 	if dbEN.Set("l10n:mode", "global").First(&productEN); productEN.LanguageCode != l10n.Global {
 		t.Error("Should find global product with global mode")
 	}
+
+	if dbEN.Joins("LEFT JOIN brands ON products.brand_id = brands.id").First(&productEN).Error != nil {
+		t.Error("Should handle queries with extra joins")
+	}
 }
 
 func TestDelete(t *testing.T) {

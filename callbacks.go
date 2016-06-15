@@ -23,16 +23,17 @@ func beforeQuery(scope *gorm.Scope) {
 			scope.Search.Where(fmt.Sprintf("%v.language_code = ?", quotedTableName), locale)
 		case "reverse":
 			if !scope.Search.Unscoped && hasDeletedAtColumn {
-				scope.Search.Where(fmt.Sprintf("(%v NOT IN (SELECT DISTINCT(%v) FROM %v t2 WHERE t2.language_code = ? AND t2.deleted_at IS NULL) AND language_code = ?)", quotedPrimaryKey, quotedPrimaryKey, quotedTableName), locale, Global)
+				scope.Search.Where(fmt.Sprintf(
+					"(%v.%v NOT IN (SELECT DISTINCT(%v) FROM %v t2 WHERE t2.language_code = ? AND t2.deleted_at IS NULL) AND %v.language_code = ?)", quotedTableName, quotedPrimaryKey, quotedPrimaryKey, quotedTableName, quotedTableName), locale, Global)
 			} else {
-				scope.Search.Where(fmt.Sprintf("(%v NOT IN (SELECT DISTINCT(%v) FROM %v t2 WHERE t2.language_code = ?) AND language_code = ?)", quotedPrimaryKey, quotedPrimaryKey, quotedTableName), locale, Global)
+				scope.Search.Where(fmt.Sprintf("(%v.%v NOT IN (SELECT DISTINCT(%v) FROM %v t2 WHERE t2.language_code = ?) AND %v.language_code = ?)", quotedTableName, quotedPrimaryKey, quotedPrimaryKey, quotedTableName, quotedTableName), locale, Global)
 			}
 		default:
 			if isLocale {
 				if !scope.Search.Unscoped && hasDeletedAtColumn {
-					scope.Search.Where(fmt.Sprintf("((%v NOT IN (SELECT DISTINCT(%v) FROM %v t2 WHERE t2.language_code = ? AND t2.deleted_at IS NULL) AND language_code = ?) OR language_code = ?) AND deleted_at IS NULL", quotedPrimaryKey, quotedPrimaryKey, quotedTableName), locale, Global, locale)
+					scope.Search.Where(fmt.Sprintf("((%v.%v NOT IN (SELECT DISTINCT(%v) FROM %v t2 WHERE t2.language_code = ? AND t2.deleted_at IS NULL) AND %v.language_code = ?) OR %v.language_code = ?) AND %v.deleted_at IS NULL", quotedTableName, quotedPrimaryKey, quotedPrimaryKey, quotedTableName, quotedTableName, quotedTableName, quotedTableName), locale, Global, locale)
 				} else {
-					scope.Search.Where(fmt.Sprintf("(%v NOT IN (SELECT DISTINCT(%v) FROM %v t2 WHERE t2.language_code = ?) AND language_code = ?) OR (language_code = ?)", quotedPrimaryKey, quotedPrimaryKey, quotedTableName), locale, Global, locale)
+					scope.Search.Where(fmt.Sprintf("(%v.%v NOT IN (SELECT DISTINCT(%v) FROM %v t2 WHERE t2.language_code = ?) AND %v.language_code = ?) OR (%v.language_code = ?)", quotedTableName, quotedPrimaryKey, quotedPrimaryKey, quotedTableName, quotedTableName, quotedTableName), locale, Global, locale)
 				}
 			} else {
 				scope.Search.Where(fmt.Sprintf("%v.language_code = ?", quotedTableName), Global)
