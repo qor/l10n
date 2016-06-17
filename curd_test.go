@@ -135,6 +135,26 @@ func TestQuery(t *testing.T) {
 	}
 }
 
+func TestQueryWithPreload(t *testing.T) {
+	product := Product{
+		Code:       "Query",
+		Name:       "global",
+		Brand:      Brand{Name: "Brand"},
+		Tags:       []Tag{{Name: "tag0"}, {Name: "tag2"}},
+		Categories: []Category{{Name: "category1"}, {Name: "category2"}},
+	}
+
+	dbGlobal.Create(&product)
+	dbCN.Create(&product)
+
+	var productCN Product
+	dbCN.Preload("Brand").Preload("Tags").Preload("Categories").First(&productCN, product.ID)
+
+	if (productCN.Brand.LanguageCode != "zh") || len(productCN.Tags) != 2 || len(productCN.Categories) != 2 {
+		t.Error("Failed to preload data relations")
+	}
+}
+
 func TestDelete(t *testing.T) {
 	product := Product{Code: "Delete", Name: "global"}
 	dbGlobal.Create(&product)

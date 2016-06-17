@@ -17,7 +17,8 @@ type Product struct {
 	ColorVariations []ColorVariation
 	BrandID         uint `l10n:"sync"`
 	Brand           Brand
-	Tags            []Tag `gorm:"many2many:product_tags"`
+	Tags            []Tag      `gorm:"many2many:product_tags"`
+	Categories      []Category `gorm:"many2many:product_categories;ForeignKey:id;AssociationForeignKey:id"`
 	l10n.Locale
 }
 
@@ -37,11 +38,18 @@ type Color struct {
 }
 
 type Brand struct {
-	ID int `gorm:"primary_key"`
+	ID   int `gorm:"primary_key"`
+	Name string
 	l10n.Locale
 }
 
 type Tag struct {
+	ID   int `gorm:"primary_key"`
+	Name string
+	l10n.Locale
+}
+
+type Category struct {
 	ID   int `gorm:"primary_key"`
 	Name string
 	l10n.Locale
@@ -56,10 +64,10 @@ func init() {
 	db.DropTableIfExists(&Product{})
 	db.DropTableIfExists(&Brand{})
 	db.DropTableIfExists(&Tag{})
+	db.DropTableIfExists(&Category{})
 	db.Exec("drop table product_tags;")
-	db.AutoMigrate(&Product{})
-	db.AutoMigrate(&Brand{})
-	db.AutoMigrate(&Tag{})
+	db.Exec("drop table product_categories;")
+	db.AutoMigrate(&Product{}, &Brand{}, &Tag{}, &Category{})
 
 	dbGlobal = db
 	dbCN = dbGlobal.Set("l10n:locale", "zh")
