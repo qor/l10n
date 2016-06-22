@@ -37,6 +37,7 @@ func getPublishableLocales(req *http.Request, currentUser interface{}) []string 
 	return []string{l10n.Global}
 }
 
+// RegisterL10nForPublish register l10n language switcher for publish
 func RegisterL10nForPublish(Publish *publish.Publish, Admin *admin.Admin) {
 	searchHandler := Publish.SearchHandler
 	Publish.SearchHandler = func(db *gorm.DB, context *qor.Context) *gorm.DB {
