@@ -45,7 +45,7 @@ func RegisterL10nForPublish(Publish *publish.Publish, Admin *admin.Admin) {
 			publishableLocales := getPublishableLocales(context.Request, context.CurrentUser)
 			return searchHandler(db, context).Set("l10n:mode", "unscoped").Where("language_code IN (?)", publishableLocales)
 		}
-		return searchHandler(db, context)
+		return searchHandler(db, context).Set("l10n:mode", "unscoped")
 	}
 
 	Admin.RegisterViewPath("github.com/qor/l10n/publish/views")
