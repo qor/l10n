@@ -1,6 +1,7 @@
 package publish
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/jinzhu/gorm"
@@ -45,8 +46,9 @@ func RegisterL10nForPublish(Publish *publish.Publish, Admin *admin.Admin) {
 			if context.Request != nil && context.Request.URL.Query().Get("locale") == "" {
 				publishableLocales := getPublishableLocales(context.Request, context.CurrentUser)
 				return searchHandler(db, context).Set("l10n:mode", "unscoped").Scopes(func(db *gorm.DB) *gorm.DB {
-					if l10n.IsLocalizable(db.NewScope(db.Value)) {
-						return db.Where("language_code IN (?)", publishableLocales)
+					scope := db.NewScope(db.Value)
+					if l10n.IsLocalizable(scope) {
+						return db.Where(fmt.Sprintf("%v.language_code IN (?)", scope.QuotedTableName()), publishableLocales)
 					}
 					return db
 				})
