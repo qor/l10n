@@ -7,11 +7,12 @@ import (
 	"github.com/qor/qor/utils"
 )
 
-func isLocalizable(scope *gorm.Scope) (isLocalizable bool) {
+// IsLocalizable return model is localizable or not
+func IsLocalizable(scope *gorm.Scope) (IsLocalizable bool) {
 	if scope.GetModelStruct().ModelType == nil {
 		return false
 	}
-	_, isLocalizable = reflect.New(scope.GetModelStruct().ModelType).Interface().(l10nInterface)
+	_, IsLocalizable = reflect.New(scope.GetModelStruct().ModelType).Interface().(l10nInterface)
 	return
 }
 

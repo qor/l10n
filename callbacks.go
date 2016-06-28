@@ -9,7 +9,7 @@ import (
 )
 
 func beforeQuery(scope *gorm.Scope) {
-	if isLocalizable(scope) {
+	if IsLocalizable(scope) {
 		quotedTableName := scope.QuotedTableName()
 		quotedPrimaryKey := scope.Quote(scope.PrimaryKey())
 		_, hasDeletedAtColumn := scope.FieldByName("deleted_at")
@@ -44,7 +44,7 @@ func beforeQuery(scope *gorm.Scope) {
 }
 
 func beforeCreate(scope *gorm.Scope) {
-	if isLocalizable(scope) {
+	if IsLocalizable(scope) {
 		if locale, ok := getLocale(scope); ok { // is locale
 			if isLocaleCreatable(scope) || !scope.PrimaryKeyZero() {
 				setLocale(scope, locale)
@@ -59,7 +59,7 @@ func beforeCreate(scope *gorm.Scope) {
 }
 
 func beforeUpdate(scope *gorm.Scope) {
-	if isLocalizable(scope) {
+	if IsLocalizable(scope) {
 		locale, isLocale := getLocale(scope)
 
 		switch mode, _ := scope.DB().Get("l10n:mode"); mode {
@@ -77,7 +77,7 @@ func beforeUpdate(scope *gorm.Scope) {
 
 func afterUpdate(scope *gorm.Scope) {
 	if !scope.HasError() {
-		if isLocalizable(scope) {
+		if IsLocalizable(scope) {
 			if locale, ok := getLocale(scope); ok {
 				if scope.DB().RowsAffected == 0 && !scope.PrimaryKeyZero() { //is locale and nothing updated
 					var count int
@@ -131,7 +131,7 @@ func afterUpdate(scope *gorm.Scope) {
 }
 
 func beforeDelete(scope *gorm.Scope) {
-	if isLocalizable(scope) {
+	if IsLocalizable(scope) {
 		if locale, ok := getLocale(scope); ok { // is locale
 			scope.Search.Where(fmt.Sprintf("%v.language_code = ?", scope.QuotedTableName()), locale)
 		}

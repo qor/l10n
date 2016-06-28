@@ -44,7 +44,12 @@ func RegisterL10nForPublish(Publish *publish.Publish, Admin *admin.Admin) {
 		if context != nil {
 			if context.Request != nil && context.Request.URL.Query().Get("locale") == "" {
 				publishableLocales := getPublishableLocales(context.Request, context.CurrentUser)
-				return searchHandler(db, context).Set("l10n:mode", "unscoped").Where("language_code IN (?)", publishableLocales)
+				return searchHandler(db, context).Set("l10n:mode", "unscoped").Scopes(func(db *gorm.DB) *gorm.DB {
+					if l10n.IsLocalizable(db.NewScope(db.Value)) {
+						return db.Where("language_code IN (?)", publishableLocales)
+					}
+					return db
+				})
 			}
 			return searchHandler(db, context).Set("l10n:mode", "locale")
 		}
