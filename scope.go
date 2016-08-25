@@ -17,11 +17,18 @@ func IsLocalizable(scope *gorm.Scope) (IsLocalizable bool) {
 }
 
 type localeCreatableInterface interface {
+	CreatableFromLocale()
+}
+
+type localeCreatableInterface2 interface {
 	LocaleCreatable()
 }
 
 func isLocaleCreatable(scope *gorm.Scope) (ok bool) {
-	_, ok = reflect.New(scope.GetModelStruct().ModelType).Interface().(localeCreatableInterface)
+	if _, ok = reflect.New(scope.GetModelStruct().ModelType).Interface().(localeCreatableInterface); ok {
+		return
+	}
+	_, ok = reflect.New(scope.GetModelStruct().ModelType).Interface().(localeCreatableInterface2)
 	return
 }
 

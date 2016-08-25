@@ -41,7 +41,7 @@ type LocaleCreatable struct {
 }
 
 // LocaleCreatable a method to allow your mod=el be creatable from locales
-func (LocaleCreatable) LocaleCreatable() {}
+func (LocaleCreatable) CreatableFromLocale() {}
 
 type availableLocalesInterface interface {
 	AvailableLocales() []string
