@@ -4,6 +4,10 @@ L10n gives your [GORM-backend](https://github.com/jinzhu/gorm) models the abilit
 
 [![GoDoc](https://godoc.org/github.com/qor/l10n?status.svg)](https://godoc.org/github.com/qor/l10n)
 
+## Documentation
+
+<https://doc.getqor.com/plugins/l10n.html>
+
 ## Usage
 
 L10n is using [GORM](https://github.com/jinzhu/gorm) callbacks to handle localization, so you will need to register callbacks first:
