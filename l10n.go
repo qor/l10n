@@ -91,10 +91,10 @@ func (l *Locale) ConfigureQorResource(res resource.Resourcer) {
 		Admin := res.GetAdmin()
 		res.UseTheme("l10n")
 
-		if res.Config.Permission == nil {
-			res.Config.Permission = roles.NewPermission()
+		if res.Permission == nil {
+			res.Permission = roles.NewPermission()
 		}
-		res.Config.Permission.Allow(roles.CRUD, "locale_admin").Allow(roles.Read, "locale_reader")
+		res.Permission.Allow(roles.CRUD, "locale_admin").Allow(roles.Read, "locale_reader")
 
 		if res.GetMeta("Localization") == nil {
 			res.Meta(&admin.Meta{Name: "Localization", Type: "localization", Valuer: func(value interface{}, ctx *qor.Context) interface{} {
@@ -143,7 +143,7 @@ func (l *Locale) ConfigureQorResource(res resource.Resourcer) {
 		}
 
 		// Roles
-		role := res.Config.Permission.Role
+		role := res.Permission.Role
 		if _, ok := role.Get("global_admin"); !ok {
 			role.Register("global_admin", func(req *http.Request, currentUser interface{}) bool {
 				if getLocaleFromContext(&qor.Context{Request: req}) == Global {
