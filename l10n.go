@@ -22,7 +22,7 @@ type l10nInterface interface {
 
 // Locale embed this struct into GROM-backend models to enable localization feature for your model
 type Locale struct {
-	LanguageCode string `sql:"size:6" gorm:"primary_key"`
+	LanguageCode string `sql:"size:20" gorm:"primary_key"`
 }
 
 // IsGlobal return if current locale is global
