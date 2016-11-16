@@ -281,8 +281,9 @@ func (l *Locale) ConfigureQorResource(res resource.Resourcer) {
 					}
 					return nil
 				},
-				Modes:    []string{"index"},
-				Resource: argumentResource,
+				Modes:      []string{"index", "menu_item"},
+				Permission: roles.Allow(roles.CRUD, roles.Anyone),
+				Resource:   argumentResource,
 			})
 		}
 	}
