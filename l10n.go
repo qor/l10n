@@ -277,7 +277,7 @@ func (l *Locale) ConfigureQorResource(res resource.Resourcer) {
 
 					reflectResults := reflect.Indirect(reflect.ValueOf(results))
 					for i := 0; i < reflectResults.Len(); i++ {
-						newDB := db.Debug().Set("l10n:locale", arg.To).Save(reflectResults.Index(i).Interface())
+						newDB := db.Set("l10n:locale", arg.To).Save(reflectResults.Index(i).Interface())
 						if len(newDB.GetErrors()) > 0 {
 							return newDB.GetErrors()[0]
 						}
