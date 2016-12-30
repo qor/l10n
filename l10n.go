@@ -194,12 +194,15 @@ func (l *Locale) ConfigureQorResource(res resource.Resourcer) {
 					db = db.Set("l10n:mode", mode)
 				}
 
-				// TODO PUT usually used for localize a record
-				if context.Request.Method == "GET" || context.Request.Method == "DELETE" {
-					for key, values := range context.Request.URL.Query() {
-						if regexp.MustCompile(`primary_key\[.+_language_code\]`).MatchString(key) {
-							if len(values) > 0 {
-								db = db.Set("l10n:locale", values[0])
+				for key, values := range context.Request.URL.Query() {
+					if regexp.MustCompile(`primary_key\[.+_language_code\]`).MatchString(key) {
+						if len(values) > 0 {
+							db = db.Set("l10n:locale", values[0])
+
+							// PUT usually used for localize
+							if context.Request.Method == "PUT" {
+								db = db.Set(key, "")
+								db = db.Set("l10n:localize_to", getLocaleFromContext(context.Context))
 							}
 						}
 					}
