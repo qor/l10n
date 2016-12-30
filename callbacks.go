@@ -28,6 +28,8 @@ func beforeQuery(scope *gorm.Scope) {
 			} else {
 				scope.Search.Where(fmt.Sprintf("(%v.%v NOT IN (SELECT DISTINCT(%v) FROM %v t2 WHERE t2.language_code = ?) AND %v.language_code = ?)", quotedTableName, quotedPrimaryKey, quotedPrimaryKey, quotedTableName, quotedTableName), locale, Global)
 			}
+		case "fallback":
+			fallthrough
 		default:
 			if isLocale {
 				if !scope.Search.Unscoped && hasDeletedAtColumn {
