@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"reflect"
+	"regexp"
 
 	"github.com/qor/admin"
 	"github.com/qor/qor"
@@ -192,6 +193,15 @@ func (l *Locale) ConfigureQorResource(res resource.Resourcer) {
 				if mode := context.Request.URL.Query().Get("locale_mode"); mode != "" {
 					db = db.Set("l10n:mode", mode)
 				}
+
+				for key, values := range context.Request.URL.Query() {
+					if regexp.MustCompile(`primary_key\[.+_language_code\]`).MatchString(key) {
+						if len(values) > 0 {
+							db = db.Set("l10n:locale", values[0])
+						}
+					}
+				}
+
 				if context.Request.URL.Query().Get("sorting") != "" {
 					db = db.Set("l10n:mode", "locale")
 				}
