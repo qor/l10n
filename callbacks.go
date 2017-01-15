@@ -151,6 +151,6 @@ func RegisterCallbacks(db *gorm.DB) {
 
 	callback.Delete().Before("gorm:before_delete").Register("l10n:before_delete", beforeDelete)
 
-	callback.RowQuery().Register("l10n:before_query", beforeQuery)
+	callback.RowQuery().Before("gorm:row_query").Register("l10n:before_query", beforeQuery)
 	callback.Query().Before("gorm:query").Register("l10n:before_query", beforeQuery)
 }
