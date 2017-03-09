@@ -202,7 +202,9 @@ func (l *Locale) ConfigureQorResource(res resource.Resourcer) {
 							// PUT usually used for localize
 							if context.Request.Method == "PUT" {
 								db = db.Set(key, "")
-								db = db.Set("l10n:localize_to", getLocaleFromContext(context.Context))
+								if _, ok := db.Get("l10n:localize_to"); !ok {
+									db = db.Set("l10n:localize_to", getLocaleFromContext(context.Context))
+								}
 							}
 						}
 					}
