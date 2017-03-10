@@ -290,7 +290,7 @@ func (l *Locale) ConfigureQorResource(res resource.Resourcer) {
 					arg := argument.Argument.(*actionArgument)
 					results := res.NewSlice()
 
-					db.Set("l10n:locale", arg.From).Find(results, fmt.Sprintf("%v IN (?)", res.PrimaryDBName()), argument.PrimaryValues)
+					db.Set("l10n:localize_to", arg.From).Find(results, fmt.Sprintf("%v IN (?)", res.PrimaryDBName()), argument.PrimaryValues)
 
 					reflectResults := reflect.Indirect(reflect.ValueOf(results))
 					for i := 0; i < reflectResults.Len(); i++ {
