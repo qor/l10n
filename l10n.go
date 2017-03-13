@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"reflect"
 	"regexp"
+	"strings"
 
 	"github.com/qor/admin"
 	"github.com/qor/qor"
@@ -286,11 +287,21 @@ func (l *Locale) ConfigureQorResource(res resource.Resourcer) {
 			res.Action(&admin.Action{
 				Name: "Localize",
 				Handle: func(argument *admin.ActionArgument) error {
-					db := argument.Context.GetDB()
-					arg := argument.Argument.(*actionArgument)
-					results := res.NewSlice()
+					var (
+						db        = argument.Context.GetDB()
+						arg       = argument.Argument.(*actionArgument)
+						results   = res.NewSlice()
+						sqls      []string
+						sqlParams []interface{}
+					)
 
-					db.Set("l10n:locale", arg.From).Find(results, fmt.Sprintf("%v IN (?)", res.PrimaryDBName()), argument.PrimaryValues)
+					for _, primaryValue := range argument.PrimaryValues {
+						primaryQuerySQL, primaryParams := res.ToPrimaryQueryParams(primaryValue, argument.Context.Context)
+						sqls = append(sqls, primaryQuerySQL)
+						sqlParams = append(sqlParams, primaryParams...)
+					}
+
+					db.Set("l10n:locale", arg.From).Where(strings.Join(sqls, " OR "), sqlParams...).Find(results)
 
 					reflectResults := reflect.Indirect(reflect.ValueOf(results))
 					for i := 0; i < reflectResults.Len(); i++ {
