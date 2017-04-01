@@ -277,7 +277,7 @@ func (l *Locale) ConfigureQorResource(res resource.Resourcer) {
 		if res.GetAction("Localize") == nil {
 			type actionArgument struct {
 				From string
-				To   string
+				To   []string
 			}
 			argumentResource := Admin.NewResource(&actionArgument{})
 			argumentResource.Meta(&admin.Meta{
@@ -295,9 +295,9 @@ func (l *Locale) ConfigureQorResource(res resource.Resourcer) {
 			})
 			argumentResource.Meta(&admin.Meta{
 				Name: "To",
-				Type: "select_one",
+				Type: "select_many",
 				Valuer: func(_ interface{}, context *qor.Context) interface{} {
-					return getLocaleFromContext(context)
+					return []string{getLocaleFromContext(context)}
 				},
 				Collection: func(value interface{}, context *qor.Context) (results [][]string) {
 					for _, locale := range getEditableLocales(context.Request, context.CurrentUser) {
@@ -328,8 +328,10 @@ func (l *Locale) ConfigureQorResource(res resource.Resourcer) {
 
 					reflectResults := reflect.Indirect(reflect.ValueOf(results))
 					for i := 0; i < reflectResults.Len(); i++ {
-						if err := db.Set("l10n:localize_to", arg.To).Save(reflectResults.Index(i).Interface()).Error; err != nil {
-							return err
+						for _, to := range arg.To {
+							if err := db.Set("l10n:localize_to", to).Save(reflectResults.Index(i).Interface()).Error; err != nil {
+								return err
+							}
 						}
 					}
 					return nil
