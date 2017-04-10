@@ -98,15 +98,13 @@ func (l *Locale) ConfigureQorResource(res resource.Resourcer) {
 		}
 		res.Permission.Allow(roles.CRUD, "locale_admin").Allow(roles.Read, "locale_reader")
 
-		if res.GetMeta("Localization") == nil {
-			res.Meta(&admin.Meta{Name: "Localization", Type: "localization", Valuer: func(value interface{}, ctx *qor.Context) interface{} {
-				var languageCodes []string
-				var db = ctx.GetDB()
-				var scope = db.NewScope(value)
-				db.New().Set("l10n:mode", "unscoped").Model(res.Value).Where(fmt.Sprintf("%v = ?", scope.PrimaryKey()), scope.PrimaryKeyValue()).Pluck("DISTINCT language_code", &languageCodes)
-				return languageCodes
-			}})
-		}
+		res.Meta(&admin.Meta{Name: "Localization", Type: "localization", Valuer: func(value interface{}, ctx *qor.Context) interface{} {
+			var languageCodes []string
+			var db = ctx.GetDB()
+			var scope = db.NewScope(value)
+			db.New().Set("l10n:mode", "unscoped").Model(res.Value).Where(fmt.Sprintf("%v = ?", scope.PrimaryKey()), scope.PrimaryKeyValue()).Pluck("DISTINCT language_code", &languageCodes)
+			return languageCodes
+		}})
 
 		var attrs = res.ConvertSectionToStrings(res.IndexAttrs())
 		var hasLocalization bool
