@@ -87,6 +87,11 @@ func getLocaleFromContext(context *qor.Context) string {
 	return Global
 }
 
+type LocalizeActionArgument struct {
+	From string
+	To   []string
+}
+
 // ConfigureQorResource configure qor locale for Qor Admin
 func (l *Locale) ConfigureQorResource(res resource.Resourcer) {
 	if res, ok := res.(*admin.Resource); ok {
@@ -275,11 +280,7 @@ func (l *Locale) ConfigureQorResource(res resource.Resourcer) {
 		})
 
 		if res.GetAction("Localize") == nil {
-			type actionArgument struct {
-				From string
-				To   []string
-			}
-			argumentResource := Admin.NewResource(&actionArgument{})
+			argumentResource := Admin.NewResource(&LocalizeActionArgument{})
 			argumentResource.Meta(&admin.Meta{
 				Name: "From",
 				Type: "select_one",
@@ -312,7 +313,7 @@ func (l *Locale) ConfigureQorResource(res resource.Resourcer) {
 				Handle: func(argument *admin.ActionArgument) error {
 					var (
 						db        = argument.Context.GetDB()
-						arg       = argument.Argument.(*actionArgument)
+						arg       = argument.Argument.(*LocalizeActionArgument)
 						results   = res.NewSlice()
 						sqls      []string
 						sqlParams []interface{}
