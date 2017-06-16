@@ -330,7 +330,7 @@ func (l *Locale) ConfigureQorResource(res resource.Resourcer) {
 					reflectResults := reflect.Indirect(reflect.ValueOf(results))
 					for i := 0; i < reflectResults.Len(); i++ {
 						for _, to := range arg.To {
-							if err := db.Set("l10n:localize_to", to).Save(reflectResults.Index(i).Interface()).Error; err != nil {
+							if err := db.Set("l10n:localize_to", to).Unscoped().Save(reflectResults.Index(i).Interface()).Error; err != nil {
 								return err
 							}
 						}
