@@ -310,7 +310,7 @@ func (l *Locale) ConfigureQorResource(res resource.Resourcer) {
 
 			res.Action(&admin.Action{
 				Name: "Localize",
-				Handle: func(argument *admin.ActionArgument) error {
+				Handler: func(argument *admin.ActionArgument) error {
 					var (
 						db        = argument.Context.GetDB()
 						arg       = argument.Argument.(*LocalizeActionArgument)
