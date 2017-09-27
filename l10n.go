@@ -42,7 +42,7 @@ type LocaleCreatable struct {
 	Locale
 }
 
-// LocaleCreatable a method to allow your mod=el be creatable from locales
+// CreatableFromLocale a method to allow your mod=el be creatable from locales
 func (LocaleCreatable) CreatableFromLocale() {}
 
 type availableLocalesInterface interface {
@@ -87,6 +87,7 @@ func getLocaleFromContext(context *qor.Context) string {
 	return Global
 }
 
+// LocalizeActionArgument localize action's argument
 type LocalizeActionArgument struct {
 	From string
 	To   []string
