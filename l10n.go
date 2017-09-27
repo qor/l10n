@@ -134,12 +134,7 @@ func (l *Locale) ConfigureQorResource(res resource.Resourcer) {
 			if isSyncField(field.StructField) {
 				if meta := res.GetMeta(field.Name); meta != nil {
 					permission := meta.Meta.Permission
-					if permission == nil {
-						permission = roles.Allow(roles.CRUD, "global_admin").Allow(roles.Read, "locale_reader")
-					} else {
-						permission = permission.Allow(roles.CRUD, "global_admin").Allow(roles.Read, "locale_reader")
-					}
-
+					res.Permission = roles.ConcatPermissioner(permission, roles.Allow(roles.CRUD, "global_admin").Allow(roles.Read, "locale_reader"))
 					meta.SetPermission(permission)
 				} else {
 					res.Meta(&admin.Meta{Name: field.Name, Permission: roles.Allow(roles.CRUD, "global_admin").Allow(roles.Read, "locale_reader")})
@@ -148,9 +143,8 @@ func (l *Locale) ConfigureQorResource(res resource.Resourcer) {
 		}
 
 		// Roles
-		role := res.Permission.Role
-		if _, ok := role.Get("global_admin"); !ok {
-			role.Register("global_admin", func(req *http.Request, currentUser interface{}) bool {
+		if _, ok := roles.Get("global_admin"); !ok {
+			roles.Register("global_admin", func(req *http.Request, currentUser interface{}) bool {
 				if getLocaleFromContext(&qor.Context{Request: req}) == Global {
 					for _, locale := range getEditableLocales(req, currentUser) {
 						if locale == Global {
@@ -162,8 +156,8 @@ func (l *Locale) ConfigureQorResource(res resource.Resourcer) {
 			})
 		}
 
-		if _, ok := role.Get("locale_admin"); !ok {
-			role.Register("locale_admin", func(req *http.Request, currentUser interface{}) bool {
+		if _, ok := roles.Get("locale_admin"); !ok {
+			roles.Register("locale_admin", func(req *http.Request, currentUser interface{}) bool {
 				currentLocale := getLocaleFromContext(&qor.Context{Request: req})
 				for _, locale := range getEditableLocales(req, currentUser) {
 					if locale == currentLocale {
@@ -174,8 +168,8 @@ func (l *Locale) ConfigureQorResource(res resource.Resourcer) {
 			})
 		}
 
-		if _, ok := role.Get("locale_reader"); !ok {
-			role.Register("locale_reader", func(req *http.Request, currentUser interface{}) bool {
+		if _, ok := roles.Get("locale_reader"); !ok {
+			roles.Register("locale_reader", func(req *http.Request, currentUser interface{}) bool {
 				currentLocale := getLocaleFromContext(&qor.Context{Request: req})
 				for _, locale := range getAvailableLocales(req, currentUser) {
 					if locale == currentLocale {
