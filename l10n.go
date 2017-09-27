@@ -99,10 +99,7 @@ func (l *Locale) ConfigureQorResource(res resource.Resourcer) {
 		Admin := res.GetAdmin()
 		res.UseTheme("l10n")
 
-		if res.Permission == nil {
-			res.Permission = roles.NewPermission()
-		}
-		res.Permission.Allow(roles.CRUD, "locale_admin").Allow(roles.Read, "locale_reader")
+		res.Permission = roles.ConcatPermissioner(res.Permission, roles.NewPermission().Allow(roles.CRUD, "locale_admin").Allow(roles.Read, "locale_reader"))
 
 		if res.GetMeta("Localization") == nil {
 			res.Meta(&admin.Meta{Name: "Localization", Type: "localization", Valuer: func(value interface{}, ctx *qor.Context) interface{} {
