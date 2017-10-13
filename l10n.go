@@ -112,23 +112,27 @@ func (l *Locale) ConfigureQorResource(res resource.Resourcer) {
 			return languageCodes
 		}})
 
-		var attrs = res.ConvertSectionToStrings(res.IndexAttrs())
-		var hasLocalization bool
-		for _, attr := range attrs {
-			if attr == "Localization" {
-				hasLocalization = true
-				break
+		res.OverrideIndexAttrs(func() {
+			var attrs = res.ConvertSectionToStrings(res.IndexAttrs())
+			var hasLocalization bool
+			for _, attr := range attrs {
+				if attr == "Localization" {
+					hasLocalization = true
+					break
+				}
 			}
-		}
 
-		if hasLocalization {
-			res.IndexAttrs(res.IndexAttrs(), "-LanguageCode")
-		} else {
-			res.IndexAttrs(res.IndexAttrs(), "-LanguageCode", "Localization")
-		}
+			if hasLocalization {
+				res.IndexAttrs(res.IndexAttrs(), "-LanguageCode")
+			} else {
+				res.IndexAttrs(res.IndexAttrs(), "-LanguageCode", "Localization")
+			}
+		})
+		res.OverrideShowAttrs(func() {
+			res.ShowAttrs(res.ShowAttrs(), "-LanguageCode", "-Localization")
+		})
 		res.NewAttrs(res.NewAttrs(), "-LanguageCode", "-Localization")
 		res.EditAttrs(res.EditAttrs(), "-LanguageCode", "-Localization")
-		res.ShowAttrs(res.ShowAttrs(), "-LanguageCode", "-Localization", false)
 
 		// Set meta permissions
 		for _, field := range Admin.Config.DB.NewScope(res.Value).Fields() {
