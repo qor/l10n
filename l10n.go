@@ -135,7 +135,7 @@ func (l *Locale) ConfigureQorResource(res resource.Resourcer) {
 		res.EditAttrs(res.EditAttrs(), "-LanguageCode", "-Localization")
 
 		// Set meta permissions
-		for _, field := range Admin.Config.DB.NewScope(res.Value).Fields() {
+		for _, field := range Admin.DB.NewScope(res.Value).Fields() {
 			if isSyncField(field.StructField) {
 				if meta := res.GetMeta(field.Name); meta != nil {
 					permission := meta.Meta.Permission
