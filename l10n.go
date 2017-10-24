@@ -116,7 +116,7 @@ func (l *Locale) ConfigureQorResource(res resource.Resourcer) {
 			var attrs = res.ConvertSectionToStrings(res.IndexAttrs())
 			var hasLocalization bool
 			for _, attr := range attrs {
-				if attr == "Localization" {
+				if attr == "Localization" || attr == "-Localization" {
 					hasLocalization = true
 					break
 				}
