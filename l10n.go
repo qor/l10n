@@ -108,8 +108,8 @@ func (l *Locale) ConfigureQorResource(res resource.Resourcer) {
 			var languageCodes []string
 			var db = ctx.GetDB()
 			var scope = db.NewScope(value)
-			db.New().Set("l10n:mode", "unscoped").Model(res.Value).Where(fmt.Sprintf("%v = ?", scope.PrimaryKey()), scope.PrimaryKeyValue()).Pluck("DISTINCT language_code", &languageCodes)
-			return languageCodes
+			db.New().Set("l10n:mode", "unscoped").Model(res.Value).Where(fmt.Sprintf("%v = ?", scope.PrimaryKey()), scope.PrimaryKeyValue()).Pluck("language_code", &languageCodes)
+			return utils.SliceUniq(languageCodes)
 		}})
 
 		res.OverrideIndexAttrs(func() {
