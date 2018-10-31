@@ -102,6 +102,7 @@ func (l *Locale) ConfigureQorResource(res resource.Resourcer) {
 		if res.Permission == nil {
 			res.Permission = roles.NewPermission()
 		}
+		res.Permission.Allow(roles.CRUD, "locale_admin").Allow(roles.Read, "locale_reader")
 
 		res.Meta(&admin.Meta{Name: "Localization", Type: "localization", Valuer: func(value interface{}, ctx *qor.Context) interface{} {
 			var languageCodes []string
